@@ -443,6 +443,7 @@ checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 name = "biomeviewer"
 version = "0.1.0"
 dependencies = [
+ "cubiomes-rs",
  "eframe",
 ]
 
@@ -821,6 +822,11 @@ dependencies = [
  "generic-array",
  "typenum",
 ]
+
+[[package]]
+name = "cubiomes-rs"
+version = "0.1.0"
+source = "git+https://github.com/phoeenix05/cubiomes-rs#e7df09d8d895ba5beb4800aa4164de9fde837e0d"
 
 [[package]]
 name = "cursor-icon"

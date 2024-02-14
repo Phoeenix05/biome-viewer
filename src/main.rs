@@ -8,13 +8,14 @@ struct BiomeViewer {}
 impl App for BiomeViewer {
     fn update(&mut self, cx: &eframe::egui::Context, frame: &mut eframe::Frame) {
         let size = cx.input(|i| i.viewport().outer_rect).unwrap();
-        let panel_width: f32 = 320.;
+        let panel_width: f32 = size.width() / 4.0;
 
         SidePanel::left("left_panel")
             .resizable(false)
             .exact_width(panel_width)
             .show(cx, |_ui| {});
 
+        // canvas
         use eframe::glow::HasContext as _;
         let gl = frame.gl().unwrap();
 
