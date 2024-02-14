@@ -1,36 +1,49 @@
-use gpui::*;
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-actions!(biomeviewer, [Hide, HideOthers, ShowAll, Quit]);
+use eframe::egui::SidePanel;
+use eframe::App;
 
 struct BiomeViewer {}
 
-impl Render for BiomeViewer {
-    fn render(&mut self, _cx: &mut gpui::ViewContext<Self>) -> impl IntoElement {
-        div()
+impl App for BiomeViewer {
+    fn update(&mut self, cx: &eframe::egui::Context, frame: &mut eframe::Frame) {
+        let size = cx.input(|i| i.viewport().outer_rect).unwrap();
+        let panel_width: f32 = 320.;
+
+        SidePanel::left("left_panel")
+            .resizable(false)
+            .exact_width(panel_width)
+            .show(cx, |_ui| {});
+
+        use eframe::glow::HasContext as _;
+        let gl = frame.gl().unwrap();
+
+        unsafe {
+            gl.disable(eframe::glow::SCISSOR_TEST);
+            gl.viewport(
+                panel_width as i32,
+                0,
+                size.width() as i32,
+                size.height() as i32,
+            );
+            gl.clear_color(0.0, 0.0, 0.0, 1.0);
+            gl.clear(eframe::glow::COLOR_BUFFER_BIT);
+        }
     }
 }
 
 fn main() {
-    App::new().run(|cx| {
-        cx.on_action(|_: &Hide, cx| cx.hide());
-        cx.on_action(|_: &HideOthers, cx| cx.hide_other_apps());
-        cx.on_action(|_: &ShowAll, cx| cx.unhide_other_apps());
-        cx.on_action(|_: &Quit, cx| {
-            cx.spawn(|cx| async move {
-                cx.update(|cx| cx.quit()).unwrap();
-            })
-            .detach();
-        });
+    let options = eframe::NativeOptions {
+        viewport: eframe::egui::ViewportBuilder::default()
+            .with_inner_size([1280., 900.])
+            .with_min_inner_size([1280., 900.]),
+        ..Default::default()
+    };
 
-        let window_opts = WindowOptions {
-            bounds: WindowBounds::Fixed(Bounds {
-                size: size(GlobalPixels::from(1280.0), GlobalPixels::from(900.0)),
-                ..Default::default()
-            }),
-            center: true,
-            ..Default::default()
-        };
-
-        cx.open_window(window_opts, |cx| cx.new_view(|_cx| BiomeViewer {}));
-    });
+    _ = eframe::run_native(
+        "biome viewer",
+        options,
+        Box::new(|_cx| Box::<BiomeViewer>::new(BiomeViewer {})),
+    )
+    .map_err(|err| eprintln!("{}", err));
 }
