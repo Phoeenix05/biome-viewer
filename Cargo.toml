@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+bytemuck = "1.14.3"
 cubiomes-rs = { git = "https://github.com/phoeenix05/cubiomes-rs", version = "0.1.0" }
 eframe = "0.26.2"
 nalgebra-glm = "0.18.0"
